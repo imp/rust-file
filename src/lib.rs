@@ -31,7 +31,7 @@
 use std::fs::File;
 use std::path::Path;
 use std::io;
-use std::io::{Read, Write};
+use std::io::{BufReader, BufRead, Read, Write};
 
 pub use io::Result;
 
@@ -72,6 +72,13 @@ pub fn put_text<P: AsRef<Path>, S: AsRef<str>>(path: P, data: S) -> io::Result<(
     put(path, data.as_ref().as_bytes())
 }
 
+/// Reads text lines from the file
+/// Similar to Python' file('name').readlines()
+pub fn readlines<P: AsRef<Path>>(path: P) -> io::Result<Vec<String>> {
+    let f = File::open(path)?;
+    let buf = BufReader::new(f);
+    Ok(buf.lines().map(|l| l.unwrap()).collect::<Vec<_>>())
+}
 
 #[test]
 fn it_works() {
